@@ -23,7 +23,7 @@ No dashboard do Supabase, vá para:
    - **Client Secret** (do Google Cloud Console)
 3. Configure o **Redirect URL** no Google Cloud Console:
    ```
-   https://gtfjaggtgyoldovcmyqh.supabase.co/auth/v1/callback
+   https://udoyldenxzuzurxvqrbn.supabase.co/auth/v1/callback
    ```
 
 #### Como obter credenciais do Google:
@@ -34,7 +34,7 @@ No dashboard do Supabase, vá para:
 4. Clique em **Create Credentials** → **OAuth client ID**
 5. Configure:
    - Application type: **Web application**
-   - Authorized redirect URIs: Adicione `https://gtfjaggtgyoldovcmyqh.supabase.co/auth/v1/callback`
+   - Authorized redirect URIs: Adicione `https://udoyldenxzuzurxvqrbn.supabase.co/auth/v1/callback`
 6. Copie o **Client ID** e **Client Secret**
 
 ### 3. Configurar GitHub OAuth
@@ -44,9 +44,9 @@ No dashboard do Supabase, vá para:
    - Acesse [GitHub Developer Settings](https://github.com/settings/developers)
    - Clique em **New OAuth App**
    - Configure:
-     - **Application name**: PecuarIA (ou seu nome)
+     - **Application name**: RaioX (ou seu nome)
      - **Homepage URL**: Sua URL de produção
-     - **Authorization callback URL**: `https://gtfjaggtgyoldovcmyqh.supabase.co/auth/v1/callback`
+     - **Authorization callback URL**: `https://udoyldenxzuzurxvqrbn.supabase.co/auth/v1/callback`
    - Copie o **Client ID** e gere um **Client Secret**
 3. Cole as credenciais no Supabase
 
@@ -55,7 +55,7 @@ No dashboard do Supabase, vá para:
 1. Ative o provider **Azure**
 2. Configure no Azure Portal:
    - Registre uma aplicação no Azure AD
-   - Configure redirect URI: `https://gtfjaggtgyoldovcmyqh.supabase.co/auth/v1/callback`
+   - Configure redirect URI: `https://udoyldenxzuzurxvqrbn.supabase.co/auth/v1/callback`
    - Copie **Client ID** e **Client Secret**
 
 ## Variáveis de Ambiente
@@ -64,7 +64,7 @@ Crie um arquivo `.env.local` na raiz do projeto:
 
 ```env
 # Supabase Configuration
-VITE_SUPABASE_URL=https://gtfjaggtgyoldovcmyqh.supabase.co
+VITE_SUPABASE_URL=https://udoyldenxzuzurxvqrbn.supabase.co
 VITE_SUPABASE_ANON_KEY=sua_chave_anon_aqui
 
 # Gemini API Key (para o Chat Agent)

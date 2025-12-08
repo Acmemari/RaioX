@@ -24,7 +24,7 @@ describe('LoginPage', () => {
   it('should render login form by default', () => {
     render(<LoginPage />);
     expect(screen.getByText('Acesse sua conta')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/exemplo@pecuaria.com/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/exemplo@raiox.com/i)).toBeInTheDocument();
   });
 
   it('should toggle to signup mode', async () => {

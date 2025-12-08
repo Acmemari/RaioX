@@ -9,7 +9,7 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
-    const { login, signInWithOAuth, signup } = useAuth() as any;
+    const { login, signup } = useAuth() as any;
     const [isSignup, setIsSignup] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,7 +19,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
     const [organizationName, setOrganizationName] = useState('');
     const [loginError, setLoginError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isOAuthLoading, setIsOAuthLoading] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -81,17 +80,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
         }
     };
 
-    const handleOAuthLogin = async (provider: 'google') => {
-        try {
-            setIsOAuthLoading(provider);
-            setLoginError('');
-            await signInWithOAuth(provider);
-        } catch (err: any) {
-            setLoginError(`Erro ao fazer login com ${provider}. Tente novamente.`);
-            setIsOAuthLoading(null);
-        }
-    };
-
     // Real-time password validation
     const passwordsMatch = isSignup ? (confirmPassword === '' || password === confirmPassword) : true;
     const passwordLengthValid = isSignup ? (password === '' || password.length >= 6) : true;
@@ -105,7 +93,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                     <div className="p-2 sm:p-3 rounded-xl bg-ai-text text-white mb-3 sm:mb-4">
                         <BrainCircuit size={24} className="sm:w-8 sm:h-8" />
                     </div>
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight">PecuarIA</h1>
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight">RaioX</h1>
                     <p className="text-ai-subtext text-xs sm:text-sm mt-1 sm:mt-2">Gestão de precisão para sua fazenda</p>
                 </div>
 
@@ -194,7 +182,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                                         if (loginError) setLoginError('');
                                     }}
                                     className="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 bg-ai-surface border border-ai-border rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-ai-text focus:border-ai-text transition-all outline-none"
-                                    placeholder="exemplo@pecuaria.com"
+                                    placeholder="exemplo@raiox.com"
                                 />
                             </div>
                         </div>
@@ -320,7 +308,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                             type="submit"
                             disabled={
                                 isSubmitting ||
-                                isOAuthLoading !== null ||
                                 (isSignup && (!passwordsMatch || !passwordLengthValid || !name.trim() || !phone.trim() || !validatePhone(phone)))
                             }
                             className="w-full flex items-center justify-center py-2.5 sm:py-3 px-4 bg-ai-text text-white rounded-lg hover:bg-black transition-colors font-medium text-xs sm:text-sm disabled:opacity-70 disabled:cursor-not-allowed"
@@ -355,44 +342,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                             </div>
                         )}
                     </form>
-
-                    {!isSignup && (
-                        <>
-                            {/* OAuth Divider */}
-                            <div className="relative my-4 sm:my-6">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-ai-border"></div>
-                                </div>
-                                <div className="relative flex justify-center text-[10px] sm:text-xs">
-                                    <span className="px-2 bg-white text-ai-subtext">ou continue com</span>
-                                </div>
-                            </div>
-
-                            {/* OAuth Buttons */}
-                            <div className="space-y-2">
-                                <button
-                                    type="button"
-                                    onClick={() => handleOAuthLogin('google')}
-                                    disabled={isSubmitting || isOAuthLoading !== null}
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-white border border-ai-border rounded-lg hover:bg-ai-surface transition-colors font-medium text-xs sm:text-sm disabled:opacity-70 disabled:cursor-not-allowed text-ai-text"
-                                >
-                                    {isOAuthLoading === 'google' ? (
-                                        <Loader2 size={16} className="sm:w-[18px] sm:h-[18px] animate-spin" />
-                                    ) : (
-                                        <>
-                                            <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
-                                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                                            </svg>
-                                            <span>Continuar com Google</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </>
-                    )}
                 </div>
 
                 {/* Footer Hints */}

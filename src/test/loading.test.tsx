@@ -23,8 +23,8 @@ describe('Carregamento de Recursos', () => {
     });
 
     it('deve ter o título correto no documento', () => {
-      document.title = 'PecuarIA - Suite de Gestão';
-      expect(document.title).toBe('PecuarIA - Suite de Gestão');
+      document.title = 'RaioX - Suite de Gestão';
+      expect(document.title).toBe('RaioX - Suite de Gestão');
     });
 
     it('deve ter meta tags essenciais', () => {

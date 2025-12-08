@@ -49,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ agents, activeAgentId, onSelectAgent,
             <div className="p-1 rounded bg-ai-text text-white">
               <BrainCircuit size={16} />
             </div>
-            <span className="font-bold tracking-tight text-base">PecuarIA</span>
+            <span className="font-bold tracking-tight text-base">RaioX</span>
           </div>
           {/* Close button - visible on mobile, hidden on desktop when sidebar is always visible */}
           <button

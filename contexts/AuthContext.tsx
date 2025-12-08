@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: session.user.id,
             email: session.user.email || '',
             name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'Usuário',
-            role: (session.user.user_metadata?.role as 'admin' | 'client') || 'client',
+            role: (session.user.user_metadata?.role as 'admin' | 'analyst' | 'client') || 'client',
             plan: (session.user.user_metadata?.plan as 'basic' | 'pro' | 'enterprise') || 'basic',
             avatar: session.user.user_metadata?.avatar || (session.user.email?.[0].toUpperCase() || 'U'),
             status: 'active'
@@ -123,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: session.user.id,
             email: session.user.email || '',
             name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'Usuário',
-            role: (session.user.user_metadata?.role as 'admin' | 'client') || 'client',
+            role: (session.user.user_metadata?.role as 'admin' | 'analyst' | 'client') || 'client',
             plan: (session.user.user_metadata?.plan as 'basic' | 'pro' | 'enterprise') || 'basic',
             avatar: session.user.user_metadata?.avatar || (session.user.email?.[0].toUpperCase() || 'U'),
             status: 'active'
@@ -211,7 +211,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: data.user.id,
             email: data.user.email || '',
             name: data.user.user_metadata?.name || data.user.user_metadata?.full_name || 'Usuário',
-            role: (data.user.user_metadata?.role as 'admin' | 'client') || 'client',
+            role: (data.user.user_metadata?.role as 'admin' | 'analyst' | 'client') || 'client',
             plan: (data.user.user_metadata?.plan as 'basic' | 'pro' | 'enterprise') || 'basic',
             avatar: data.user.user_metadata?.avatar || (data.user.email?.[0].toUpperCase() || 'U'),
             status: 'active'
@@ -301,33 +301,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        // Update the profile with phone number if it exists
-        // The trigger will create the profile, but we need to update it with phone
-        try {
-          const { error: updateError } = await supabase
-            .from('user_profiles')
-            .update({ phone: phone })
-            .eq('id', data.user.id);
-
-          if (updateError) {
-            console.warn('Could not update phone in profile:', updateError);
-            // Continue anyway - phone might be set later
-          }
-        } catch (err) {
-          console.warn('Error updating phone:', err);
+        // Criar perfil primeiro usando a função RPC
+        const profileCreated = await createUserProfileIfMissing(data.user.id);
+        
+        if (!profileCreated) {
+          console.warn('Profile creation returned false - may already exist');
         }
 
-        // Wait a bit for the trigger to create the profile
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Aguardar um pouco para garantir que o perfil foi criado
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Try to load the profile with retries
+        // Atualizar o perfil com phone e organization_name se fornecidos
+        try {
+          const updateData: any = {};
+          if (phone) {
+            updateData.phone = phone;
+          }
+          
+          // Buscar a organização do usuário e atualizar se necessário
+          if (organizationName) {
+            const { data: orgData } = await supabase
+              .from('organizations')
+              .select('id')
+              .eq('owner_id', data.user.id)
+              .single();
+            
+            if (orgData?.id) {
+              await supabase
+                .from('organizations')
+                .update({ name: organizationName })
+                .eq('id', orgData.id);
+            }
+          }
+
+          if (Object.keys(updateData).length > 0) {
+            const { error: updateError } = await supabase
+              .from('user_profiles')
+              .update(updateData)
+              .eq('id', data.user.id);
+
+            if (updateError) {
+              console.warn('Could not update profile:', updateError);
+            }
+          }
+        } catch (err) {
+          console.warn('Error updating profile:', err);
+        }
+
+        // Aguardar mais um pouco e carregar o perfil
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Tentar carregar o perfil com retries
         const userProfile = await loadUserProfile(data.user.id, 5, 800);
         if (userProfile) {
           setUser(userProfile);
           setIsLoading(false);
           return { success: true };
         } else {
-          // Wait a bit more and try again
+          // Tentar mais uma vez após esperar mais
           console.warn('Profile not found after signup, retrying...');
           await new Promise(resolve => setTimeout(resolve, 2000));
           const retryProfile = await loadUserProfile(data.user.id, 3, 1000);
@@ -339,7 +370,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         setIsLoading(false);
-        return { success: true }; // Return success even if profile not loaded yet - it will be created by trigger
+        return { success: true }; // Retornar sucesso mesmo se perfil não carregado ainda
       }
 
       setIsLoading(false);

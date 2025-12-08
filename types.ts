@@ -46,7 +46,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'client';
+  role: 'admin' | 'analyst' | 'client';
   avatar?: string;
   plan?: 'basic' | 'pro' | 'enterprise';
   status?: 'active' | 'inactive';

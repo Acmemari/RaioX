@@ -48,7 +48,7 @@ describe('Sidebar', () => {
       />
     );
 
-    expect(screen.getByText('PecuarIA')).toBeInTheDocument();
+    expect(screen.getByText('RaioX')).toBeInTheDocument();
     expect(screen.getByText('Lucro do Boi')).toBeInTheDocument();
     expect(screen.getByText('Pergunte p/ Antonio')).toBeInTheDocument();
   });

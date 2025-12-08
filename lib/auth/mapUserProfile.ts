@@ -24,7 +24,7 @@ export const mapUserProfile = (profile: any): User | null => {
   }
 
   // Validação de role
-  const validRoles = ['admin', 'client'];
+  const validRoles = ['admin', 'analyst', 'client'];
   const role = profile.role;
   if (!role || !validRoles.includes(role)) {
     console.warn('[mapUserProfile] Invalid profile: missing or invalid role', { role, profile });
