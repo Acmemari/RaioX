@@ -31,10 +31,21 @@ export interface CreateInvitationParams {
  * Cria um novo convite
  */
 export const createInvitation = async (params: CreateInvitationParams): Promise<Invitation> => {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  
+  if (userError || !userData.user) {
+    throw new Error('Usuário não autenticado');
+  }
+
+  const userId = userData.user.id;
+  if (!userId) {
+    throw new Error('ID do usuário não encontrado');
+  }
+
   const { data, error } = await supabase.rpc('create_invitation', {
     p_email: params.email,
     p_role: params.role,
-    p_invited_by: (await supabase.auth.getUser()).data.user?.id,
+    p_invited_by: userId,
     p_invited_by_role: params.role === 'analyst' ? 'admin' : 'analyst',
     p_expires_in_days: params.expires_in_days || 7,
     p_metadata: params.metadata || {}
@@ -51,10 +62,21 @@ export const createInvitation = async (params: CreateInvitationParams): Promise<
  * Busca convites criados pelo usuário atual
  */
 export const getMyInvitations = async (): Promise<Invitation[]> => {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  
+  if (userError || !userData.user) {
+    throw new Error('Usuário não autenticado');
+  }
+
+  const userId = userData.user.id;
+  if (!userId) {
+    throw new Error('ID do usuário não encontrado');
+  }
+
   const { data, error } = await supabase
     .from('invitations')
     .select('*')
-    .eq('invited_by', (await supabase.auth.getUser()).data.user?.id)
+    .eq('invited_by', userId)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -125,9 +147,20 @@ export const acceptInvitation = async (invitationCode: string): Promise<Invitati
  * Cancela um convite
  */
 export const cancelInvitation = async (invitationId: string): Promise<Invitation> => {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  
+  if (userError || !userData.user) {
+    throw new Error('Usuário não autenticado');
+  }
+
+  const userId = userData.user.id;
+  if (!userId) {
+    throw new Error('ID do usuário não encontrado');
+  }
+
   const { data, error } = await supabase.rpc('cancel_invitation', {
     p_invitation_id: invitationId,
-    p_user_id: (await supabase.auth.getUser()).data.user?.id
+    p_user_id: userId
   });
 
   if (error) {
