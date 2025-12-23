@@ -5,20 +5,12 @@ import { Agent, User } from '../../../types';
 
 const mockAgents: Agent[] = [
   {
-    id: 'cattle-profit',
-    name: 'Lucro do Boi',
-    description: 'Análise econômica completa.',
-    icon: 'calculator',
-    category: 'financeiro',
+    id: 'admin-dashboard',
+    name: 'Gestão de Clientes',
+    description: 'Painel mestre administrativo',
+    icon: 'users',
+    category: 'admin',
     status: 'active',
-  },
-  {
-    id: 'ask-antonio',
-    name: 'Pergunte p/ Antonio',
-    description: 'Consultor virtual especialista.',
-    icon: 'nutrition',
-    category: 'consultoria',
-    status: 'locked',
   },
 ];
 
@@ -39,7 +31,7 @@ describe('Sidebar', () => {
     render(
       <Sidebar
         agents={mockAgents}
-        activeAgentId="cattle-profit"
+        activeAgentId="admin-dashboard"
         onSelectAgent={mockOnSelectAgent}
         isOpen={true}
         toggleSidebar={mockToggleSidebar}
@@ -48,16 +40,15 @@ describe('Sidebar', () => {
       />
     );
 
-    expect(screen.getByText('RaioX')).toBeInTheDocument();
-    expect(screen.getByText('Lucro do Boi')).toBeInTheDocument();
-    expect(screen.getByText('Pergunte p/ Antonio')).toBeInTheDocument();
+    expect(screen.getByText('Hecttare')).toBeInTheDocument();
+    expect(screen.getByText('Gestão de Clientes')).toBeInTheDocument();
   });
 
   it('should show user information', () => {
     render(
       <Sidebar
         agents={mockAgents}
-        activeAgentId="cattle-profit"
+        activeAgentId="admin-dashboard"
         onSelectAgent={mockOnSelectAgent}
         isOpen={true}
         toggleSidebar={mockToggleSidebar}
@@ -67,23 +58,6 @@ describe('Sidebar', () => {
     );
 
     expect(screen.getByText('Test User')).toBeInTheDocument();
-  });
-
-  it('should show locked status for locked agents', () => {
-    render(
-      <Sidebar
-        agents={mockAgents}
-        activeAgentId="cattle-profit"
-        onSelectAgent={mockOnSelectAgent}
-        isOpen={true}
-        toggleSidebar={mockToggleSidebar}
-        user={mockUser}
-        onLogout={mockOnLogout}
-      />
-    );
-
-    const lockedAgent = screen.getByText('Pergunte p/ Antonio').closest('button');
-    expect(lockedAgent).toHaveAttribute('disabled');
   });
 });
 

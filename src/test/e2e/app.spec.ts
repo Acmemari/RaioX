@@ -29,7 +29,7 @@ test.describe('Funcionalidade do App', () => {
 
     // Verificar título
     const title = await page.title();
-    expect(title).toContain('RaioX');
+    expect(title).toContain('Hecttare');
   });
 
   test('deve carregar recursos sem erros de rede', async ({ page }) => {

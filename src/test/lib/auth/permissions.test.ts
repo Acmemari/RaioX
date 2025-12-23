@@ -70,7 +70,7 @@ describe('checkPermission', () => {
       role: 'client',
       plan: 'basic',
     };
-    expect(checkPermission(user, 'Tendências')).toBe(false);
+    expect(checkPermission(user, 'Admin')).toBe(false);
   });
 });
 

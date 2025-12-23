@@ -1,6 +1,6 @@
-# 🚀 Configuração de OAuth - Passo a Passo para RaioX
+# 🚀 Configuração de OAuth - Passo a Passo para Hecttare
 
-Este guia irá te ajudar a configurar o OAuth com Google no projeto RaioX.
+Este guia irá te ajudar a configurar o OAuth com Google no projeto Hecttare.
 
 ## 📋 URLs Importantes
 
@@ -18,7 +18,7 @@ Este guia irá te ajudar a configurar o OAuth com Google no projeto RaioX.
 2. Faça login com sua conta Google
 3. Clique no seletor de projeto no topo
 4. Clique em **"Novo Projeto"** ou selecione um existente
-5. Dê um nome (ex: "RaioX OAuth")
+5. Dê um nome (ex: "Hecttare OAuth")
 6. Clique em **Criar**
 
 ### 1.2 Configurar Tela de Consentimento OAuth
@@ -26,7 +26,7 @@ Este guia irá te ajudar a configurar o OAuth com Google no projeto RaioX.
 1. No menu lateral, vá em **APIs & Services** → **OAuth consent screen**
 2. Selecione **External** (ou Internal se for conta corporativa)
 3. Preencha:
-   - **App name:** RaioX
+   - **App name:** Hecttare
    - **User support email:** Seu email
    - **Developer contact:** Seu email
 4. Clique em **Save and Continue**
@@ -42,7 +42,7 @@ Este guia irá te ajudar a configurar o OAuth com Google no projeto RaioX.
 2. Clique em **Create Credentials** → **OAuth client ID**
 3. Selecione **Web application**
 4. Configure:
-   - **Name:** RaioX Web Client
+   - **Name:** Hecttare Web Client
    - **Authorized JavaScript origins:**
      - `https://udoyldenxzuzurxvqrbn.supabase.co`
      - `http://localhost:3003` (para desenvolvimento)
@@ -59,7 +59,7 @@ Este guia irá te ajudar a configurar o OAuth com Google no projeto RaioX.
 
 1. Acesse [Supabase Dashboard](https://supabase.com/dashboard)
 2. Faça login
-3. Selecione o projeto **RaioX**
+3. Selecione o projeto **Hecttare**
 4. No menu lateral, vá em **Authentication** → **Providers**
 
 ### 2.2 Habilitar Google Provider

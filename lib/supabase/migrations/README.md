@@ -1,6 +1,6 @@
-# Migrations do Banco de Dados - RaioX
+# Migrations do Banco de Dados - Hecttare
 
-Este diretório contém as migrations SQL para o banco de dados do projeto RaioX.
+Este diretório contém as migrations SQL para o banco de dados do projeto Hecttare.
 
 ## 📋 Estrutura do Schema
 
@@ -27,7 +27,7 @@ Este diretório contém as migrations SQL para o banco de dados do projeto RaioX
 ### Opção 1: Via Supabase Dashboard
 
 1. Acesse o [Supabase Dashboard](https://supabase.com/dashboard)
-2. Selecione seu projeto **RaioX**
+2. Selecione seu projeto **Hecttare**
 3. Vá em **SQL Editor**
 4. Copie e cole o conteúdo do arquivo `000_initial_schema.sql`
 5. Clique em **Run**

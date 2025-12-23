@@ -1,8 +1,8 @@
-# 🏢 Documentação do Sistema Multi-Tenant - RaioX
+# 🏢 Documentação do Sistema Multi-Tenant - Hecttare
 
 ## Visão Geral
 
-O RaioX implementa um sistema multi-tenant com três níveis de acesso hierárquicos:
+O Hecttare implementa um sistema multi-tenant com três níveis de acesso hierárquicos:
 
 1. **Administrador (Admin)**: Acesso total ao sistema
 2. **Analista (Analyst)**: Acesso aos dados dos seus clientes atribuídos

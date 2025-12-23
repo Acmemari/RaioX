@@ -107,14 +107,10 @@ O projeto utiliza as seguintes variáveis de ambiente:
   
 **Importante:** Configure `OPENAI_API_KEY` nas variáveis de ambiente do Vercel para que o chat funcione em produção.
 
-### OpenAI Assistant
+### Admin Dashboard
 
-O chat utiliza o OpenAI Assistant API através de uma serverless function:
-- `api/ask-assistant.ts` - Endpoint serverless do Vercel
-- `lib/server/openai/assistantClient.ts` - Cliente para comunicação com a API OpenAI
-- `agents/ChatAgent.tsx` - Componente React que consome a API
-
-O assistente configurado possui o ID: `asst_pxFD2qiuUYJOt5abVw8IWwUf`
+O sistema possui um painel administrativo para gestão de clientes:
+- `agents/AdminDashboard.tsx` - Painel administrativo para gestão de clientes
 
 ### Tailwind CSS
 

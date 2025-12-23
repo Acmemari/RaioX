@@ -1,8 +1,8 @@
-# 📊 Documentação do Schema do Banco de Dados - RaioX
+# 📊 Documentação do Schema do Banco de Dados - Hecttare
 
 ## Contexto do Projeto
 
-O **RaioX** é um sistema de gestão de precisão para fazendas pecuárias, oferecendo:
+O **Hecttare** é um sistema de gestão de precisão para fazendas pecuárias, oferecendo:
 - Calculadoras inteligentes para análise de lucro
 - Chat com agentes de IA especializados
 - Gestão de organizações/fazendas

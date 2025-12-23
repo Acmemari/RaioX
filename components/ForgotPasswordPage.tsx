@@ -136,7 +136,7 @@ const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onToast, onBack
                                         if (error) setError('');
                                     }}
                                     className="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 bg-ai-surface border border-ai-border rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-ai-text focus:border-ai-text transition-all outline-none"
-                                    placeholder="exemplo@raiox.com"
+                                    placeholder="exemplo@hecttare.com"
                                 />
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 -- ============================================================================
--- MIGRATION: Initial Schema for RaioX
--- Descrição: Criação do schema inicial do banco de dados para o projeto RaioX
+-- MIGRATION: Initial Schema for Hecttare
+-- Descrição: Criação do schema inicial do banco de dados para o projeto Hecttare
 -- Data: 2025-12-08
 -- ============================================================================
 

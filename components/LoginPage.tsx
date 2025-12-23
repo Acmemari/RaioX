@@ -93,7 +93,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                     <div className="p-2 sm:p-3 rounded-xl bg-ai-text text-white mb-3 sm:mb-4">
                         <BrainCircuit size={24} className="sm:w-8 sm:h-8" />
                     </div>
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight">RaioX</h1>
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Hecttare</h1>
                     <p className="text-ai-subtext text-xs sm:text-sm mt-1 sm:mt-2">Gestão de precisão para sua fazenda</p>
                 </div>
 
@@ -182,7 +182,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                                         if (loginError) setLoginError('');
                                     }}
                                     className="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 bg-ai-surface border border-ai-border rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-ai-text focus:border-ai-text transition-all outline-none"
-                                    placeholder="exemplo@raiox.com"
+                                    placeholder="exemplo@hecttare.com"
                                 />
                             </div>
                         </div>

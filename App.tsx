@@ -14,11 +14,7 @@ const ForgotPasswordPage = lazy(() => import('./components/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('./components/ResetPasswordPage'));
 
 // Lazy load agents for code splitting
-const CattleProfitCalculator = lazy(() => import('./agents/CattleProfitCalculator'));
-const ChatAgent = lazy(() => import('./agents/ChatAgent'));
 const AdminDashboard = lazy(() => import('./agents/AdminDashboard'));
-const MarketTrends = lazy(() => import('./agents/MarketTrends'));
-const SavedScenarios = lazy(() => import('./agents/SavedScenarios'));
 
 const LoadingFallback: React.FC = () => (
   <div className="flex items-center justify-center h-full">
@@ -28,7 +24,7 @@ const LoadingFallback: React.FC = () => (
 
 const AppContent: React.FC = () => {
   const { user, isLoading, logout, checkPermission, upgradePlan, isPasswordRecovery, clearPasswordRecovery } = useAuth() as any;
-  const [activeAgentId, setActiveAgentId] = useState<string>('cattle-profit');
+  const [activeAgentId, setActiveAgentId] = useState<string>('');
   
   // Verificar se as variáveis de ambiente estão configuradas
   const [envError, setEnvError] = useState<string | null>(null);
@@ -39,7 +35,6 @@ const AppContent: React.FC = () => {
     }
   }, []);
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [calculatorInputs, setCalculatorInputs] = useState<any>(null);
   const [authPage, setAuthPage] = useState<'login' | 'forgot-password'>('login');
   // Sidebar starts closed on mobile, open on desktop
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
@@ -81,45 +76,9 @@ const AppContent: React.FC = () => {
     }
 
     try {
-      const baseAgents: Agent[] = [
-        {
-          id: 'cattle-profit',
-          name: 'Lucro do Boi',
-          description: 'Análise econômica completa.',
-          icon: 'calculator',
-          category: 'financeiro',
-          status: checkPermission('Calculadora') ? 'active' : 'locked'
-        },
-        {
-          id: 'saved-scenarios',
-          name: 'Meus Salvos',
-          description: 'Cenários e simulações salvos.',
-          icon: 'save',
-          category: 'financeiro',
-          status: checkPermission('Calculadora') ? 'active' : 'locked'
-        },
-        {
-          id: 'ask-antonio',
-          name: 'Pergunte p/ Antonio',
-          description: 'Consultor virtual especialista.',
-          icon: 'nutrition',
-          category: 'consultoria',
-          status: 'locked'
-        },
-        {
-          id: 'market-trends',
-          name: 'Tendências',
-          description: 'Ciclo pecuário e reposição.',
-          icon: 'chart',
-          category: 'mercado',
-          status: checkPermission('Tendências') ? 'active' : 'locked'
-        }
-      ];
-
-      // Dynamically add Admin tools if user is admin
+      // Only Admin Dashboard available
       return user?.role === 'admin'
         ? [
-            ...baseAgents,
             {
               id: 'admin-dashboard',
               name: 'Gestão de Clientes',
@@ -129,49 +88,42 @@ const AppContent: React.FC = () => {
               status: 'active'
             } as Agent
           ]
-        : baseAgents;
+        : [];
     } catch (error) {
       console.error('Erro ao calcular agents:', error);
-      // Retornar pelo menos os agents básicos em caso de erro
-      return [
-        {
-          id: 'cattle-profit',
-          name: 'Lucro do Boi',
-          description: 'Análise econômica completa.',
-          icon: 'calculator',
-          category: 'financeiro',
-          status: 'active'
-        },
-        {
-          id: 'ask-antonio',
-          name: 'Pergunte p/ Antonio',
-          description: 'Consultor virtual especialista.',
-          icon: 'nutrition',
-          category: 'consultoria',
-          status: 'active'
-        }
-      ];
+      // Retornar admin dashboard se for admin, caso contrário vazio
+      return user?.role === 'admin'
+        ? [
+            {
+              id: 'admin-dashboard',
+              name: 'Gestão de Clientes',
+              description: 'Painel mestre administrativo',
+              icon: 'users',
+              category: 'admin',
+              status: 'active'
+            } as Agent
+          ]
+        : [];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isLoading]);
 
-  // Reset active agent if access is lost or on role change
+  // Set default active agent when agents are loaded
   useEffect(() => {
-    // Only run if user is loaded (not loading)
-    if (isLoading || !user) return;
+    if (isLoading || !user || agents.length === 0) return;
 
+    // Se não tiver activeAgentId definido, definir o primeiro agent disponível
+    if (!activeAgentId && agents.length > 0) {
+      setActiveAgentId(agents[0].id);
+    }
+
+    // Reset active agent if access is lost or on role change
     if (activeAgentId === 'admin-dashboard' && user?.role !== 'admin') {
-      setActiveAgentId('cattle-profit');
+      // Se não for admin, não há agents disponíveis
+      setActiveAgentId('');
       return;
     }
-
-    // Redirect if trying to access locked agents (market-trends)
-    const lockedAgents = ['market-trends'];
-    if (lockedAgents.includes(activeAgentId)) {
-      setActiveAgentId('cattle-profit');
-      return;
-    }
-  }, [user, activeAgentId, isLoading]);
+  }, [user, activeAgentId, isLoading, agents]);
 
   // Timeout de segurança para agents não carregarem
   useEffect(() => {
@@ -265,18 +217,18 @@ const AppContent: React.FC = () => {
   // Se timeout ocorreu, tentar renderizar mesmo sem agents (fallback)
   if (agents.length === 0 && agentsLoadTimeout) {
     console.error('Erro: agents não carregaram. Renderizando fallback.');
-    // Retornar pelo menos um agente básico para evitar tela branca
-    const fallbackAgents: Agent[] = [
-      {
-        id: 'cattle-profit',
-        name: 'Lucro do Boi',
-        description: 'Análise econômica completa.',
-        icon: 'calculator',
-        category: 'financeiro',
-        status: 'active'
-      }
-    ];
-    // Usar fallback temporariamente
+    // Se não for admin, mostrar mensagem de que não há funcionalidades disponíveis
+    if (user?.role !== 'admin') {
+      return (
+        <div className="h-screen w-screen flex items-center justify-center bg-ai-bg text-ai-text">
+          <div className="text-center max-w-md mx-auto p-6">
+            <Construction size={48} className="mx-auto mb-4 opacity-30" />
+            <h2 className="text-lg font-medium mb-2 text-ai-text">Nenhuma funcionalidade disponível</h2>
+            <p className="text-sm text-ai-subtext">Entre em contato com o administrador para mais informações.</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-ai-bg text-ai-text">
         <div className="text-center">
@@ -296,7 +248,7 @@ const AppContent: React.FC = () => {
       return (
         <SettingsPage
           user={user}
-          onBack={() => setActiveAgentId('cattle-profit')}
+          onBack={() => setActiveAgentId('admin-dashboard')}
           onToast={(message, type) => addToast({ id: Date.now().toString(), message, type })}
           onLogout={logout}
         />
@@ -309,56 +261,25 @@ const AppContent: React.FC = () => {
           user={user}
           onUpgrade={(planId) => {
             upgradePlan(planId as any);
-            setActiveAgentId('cattle-profit');
+            setActiveAgentId('admin-dashboard');
           }}
-          onBack={() => setActiveAgentId('cattle-profit')}
+          onBack={() => setActiveAgentId('admin-dashboard')}
         />
       );
     }
 
     switch (activeAgentId) {
-      case 'cattle-profit':
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <CattleProfitCalculator
-              initialInputs={calculatorInputs}
-              onToast={addToast}
-              onNavigateToSaved={() => setActiveAgentId('saved-scenarios')}
-            />
-          </Suspense>
-        );
-      case 'saved-scenarios':
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <SavedScenarios
-              key="saved-scenarios"
-              onLoadScenario={(inputs) => {
-                setCalculatorInputs(inputs);
-                setActiveAgentId('cattle-profit');
-              }}
-              onNavigateToCalculator={() => setActiveAgentId('cattle-profit')}
-            />
-          </Suspense>
-        );
-      case 'ask-antonio':
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <ChatAgent />
-          </Suspense>
-        );
-      case 'market-trends':
-        return (
-          <Suspense fallback={<LoadingFallback />}>
-            <MarketTrends />
-          </Suspense>
-        );
       case 'admin-dashboard':
         return user.role === 'admin' ? (
           <Suspense fallback={<LoadingFallback />}>
             <AdminDashboard />
           </Suspense>
         ) : (
-          <div>Acesso negado.</div>
+          <div className="flex flex-col items-center justify-center h-full text-ai-subtext">
+            <Construction size={32} className="mb-3 opacity-30" />
+            <h2 className="text-lg font-medium mb-1 text-ai-text">Acesso Negado</h2>
+            <p className="text-sm">Você não tem permissão para acessar esta área.</p>
+          </div>
         );
       default:
         return (
