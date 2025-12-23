@@ -12,9 +12,11 @@ import { ToastContainer, Toast } from './components/Toast';
 // Lazy load auth pages
 const ForgotPasswordPage = lazy(() => import('./components/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./components/ResetPasswordPage'));
+const RegisterPage = lazy(() => import('./components/RegisterPage'));
 
 // Lazy load agents for code splitting
 const AdminDashboard = lazy(() => import('./agents/AdminDashboard'));
+const AnalystDashboard = lazy(() => import('./agents/AnalystDashboard'));
 
 const LoadingFallback: React.FC = () => (
   <div className="flex items-center justify-center h-full">
@@ -76,19 +78,35 @@ const AppContent: React.FC = () => {
     }
 
     try {
-      // Only Admin Dashboard available
-      return user?.role === 'admin'
-        ? [
-            {
-              id: 'admin-dashboard',
-              name: 'Gestão de Clientes',
-              description: 'Painel mestre administrativo',
-              icon: 'users',
-              category: 'admin',
-              status: 'active'
-            } as Agent
-          ]
-        : [];
+      // Admin Dashboard for admins
+      if (user?.role === 'admin') {
+        return [
+          {
+            id: 'admin-dashboard',
+            name: 'Gestão de Clientes',
+            description: 'Painel mestre administrativo',
+            icon: 'users',
+            category: 'admin',
+            status: 'active'
+          } as Agent
+        ];
+      }
+      
+      // Analyst Dashboard for analysts
+      if (user?.role === 'analyst') {
+        return [
+          {
+            id: 'analyst-dashboard',
+            name: 'Gestão de Clientes',
+            description: 'Painel de gestão de clientes',
+            icon: 'users',
+            category: 'admin',
+            status: 'active'
+          } as Agent
+        ];
+      }
+      
+      return [];
     } catch (error) {
       console.error('Erro ao calcular agents:', error);
       // Retornar admin dashboard se for admin, caso contrário vazio
@@ -119,7 +137,10 @@ const AppContent: React.FC = () => {
 
     // Reset active agent if access is lost or on role change
     if (activeAgentId === 'admin-dashboard' && user?.role !== 'admin') {
-      // Se não for admin, não há agents disponíveis
+      setActiveAgentId('');
+      return;
+    }
+    if (activeAgentId === 'analyst-dashboard' && user?.role !== 'analyst') {
       setActiveAgentId('');
       return;
     }
@@ -248,7 +269,7 @@ const AppContent: React.FC = () => {
       return (
         <SettingsPage
           user={user}
-          onBack={() => setActiveAgentId('admin-dashboard')}
+          onBack={() => setActiveAgentId(user?.role === 'admin' ? 'admin-dashboard' : 'analyst-dashboard')}
           onToast={(message, type) => addToast({ id: Date.now().toString(), message, type })}
           onLogout={logout}
         />
@@ -261,7 +282,7 @@ const AppContent: React.FC = () => {
           user={user}
           onUpgrade={(planId) => {
             upgradePlan(planId as any);
-            setActiveAgentId('admin-dashboard');
+            setActiveAgentId(user?.role === 'admin' ? 'admin-dashboard' : 'analyst-dashboard');
           }}
           onBack={() => setActiveAgentId('admin-dashboard')}
         />
@@ -273,6 +294,18 @@ const AppContent: React.FC = () => {
         return user.role === 'admin' ? (
           <Suspense fallback={<LoadingFallback />}>
             <AdminDashboard />
+          </Suspense>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full text-ai-subtext">
+            <Construction size={32} className="mb-3 opacity-30" />
+            <h2 className="text-lg font-medium mb-1 text-ai-text">Acesso Negado</h2>
+            <p className="text-sm">Você não tem permissão para acessar esta área.</p>
+          </div>
+        );
+      case 'analyst-dashboard':
+        return user.role === 'analyst' ? (
+          <Suspense fallback={<LoadingFallback />}>
+            <AnalystDashboard />
           </Suspense>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-ai-subtext">

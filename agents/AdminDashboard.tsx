@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { User, Shield, Users, Activity, Search, MoreHorizontal, CheckCircle2, XCircle, Loader2, AlertCircle } from 'lucide-react';
+import { User, Shield, Users, Activity, Search, MoreHorizontal, CheckCircle2, XCircle, Loader2, AlertCircle, Mail } from 'lucide-react';
 import { User as UserType } from '../types';
 import { supabase } from '../lib/supabase';
 import { mapUserProfile } from '../lib/auth/mapUserProfile';
 import { useAuth } from '../contexts/AuthContext';
+import InvitationManager from '../components/InvitationManager';
 
 const AdminDashboard: React.FC = () => {
   const { user: currentUser } = useAuth();
+  const [activeTab, setActiveTab] = useState<'clients' | 'invitations'>('clients');
   const [clients, setClients] = useState<UserType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +18,7 @@ const AdminDashboard: React.FC = () => {
     active: 0,
     mrr: 0,
   });
+  const [toasts, setToasts] = useState<Array<{ id: string; message: string; type: 'success' | 'error' | 'warning' | 'info' }>>([]);
 
   useEffect(() => {
     // Verify admin permission before loading
@@ -172,11 +175,53 @@ const AdminDashboard: React.FC = () => {
     );
   }
 
+  const addToast = (message: string, type: 'success' | 'error' | 'warning' | 'info') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  };
+
   return (
     <div className="h-full flex flex-col gap-6 p-2">
-      
-      {/* Top Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-ai-border">
+        <button
+          onClick={() => setActiveTab('clients')}
+          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
+            activeTab === 'clients'
+              ? 'border-ai-text text-ai-text'
+              : 'border-transparent text-ai-subtext hover:text-ai-text'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Users size={16} />
+            Clientes
+          </div>
+        </button>
+        <button
+          onClick={() => setActiveTab('invitations')}
+          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
+            activeTab === 'invitations'
+              ? 'border-ai-text text-ai-text'
+              : 'border-transparent text-ai-subtext hover:text-ai-text'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Mail size={16} />
+            Convites para Analistas
+          </div>
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'invitations' ? (
+        <InvitationManager role="admin" onToast={addToast} />
+      ) : (
+        <>
+          {/* Top Stats */}
+          <div className="grid grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-xl border border-ai-border shadow-sm">
             <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Users size={18} /></div>
@@ -294,6 +339,30 @@ const AdminDashboard: React.FC = () => {
             Mostrando {filteredClients.length} de {stats.total} clientes
          </div>
       </div>
+        </>
+      )}
+
+      {/* Toast Notifications */}
+      {toasts.length > 0 && (
+        <div className="fixed bottom-4 right-4 z-50 space-y-2">
+          {toasts.map((toast) => (
+            <div
+              key={toast.id}
+              className={`px-4 py-3 rounded-lg shadow-lg border text-sm ${
+                toast.type === 'success'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  : toast.type === 'error'
+                  ? 'bg-red-50 border-red-200 text-red-800'
+                  : toast.type === 'warning'
+                  ? 'bg-amber-50 border-amber-200 text-amber-800'
+                  : 'bg-blue-50 border-blue-200 text-blue-800'
+              }`}
+            >
+              {toast.message}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

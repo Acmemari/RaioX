@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { BrainCircuit, Lock, Mail, ArrowRight, Loader2, User, Building2, Phone } from 'lucide-react';
+import { BrainCircuit, Lock, Mail, ArrowRight, Loader2, User, Building2, Phone, Shield } from 'lucide-react';
 import { formatPhone, validatePhone } from '../lib/utils/phoneMask';
 
 interface LoginPageProps {
@@ -17,6 +17,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [organizationName, setOrganizationName] = useState('');
+    const [userRole, setUserRole] = useState<'admin' | 'analyst' | 'client'>('client');
     const [loginError, setLoginError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,7 +58,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                 return;
             }
 
-            const result = await signup(email, password, name, phone, organizationName);
+            const result = await signup(email, password, name, phone, organizationName, userRole);
 
             if (!result.success) {
                 setLoginError(result.error || 'Erro ao criar conta. Tente novamente.');
@@ -122,6 +123,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
                                 setName('');
                                 setPhone('');
                                 setOrganizationName('');
+                                setUserRole('client');
                             }}
                             className={`flex-1 py-2 px-3 sm:px-4 rounded-md text-[10px] sm:text-xs font-medium transition-colors ${!isSignup
                                 ? 'bg-ai-text text-white'
@@ -149,22 +151,54 @@ const LoginPage: React.FC<LoginPageProps> = ({ onToast, onForgotPassword }) => {
 
                     <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                         {isSignup && (
-                            <div>
-                                <label className="block text-[10px] sm:text-xs font-medium text-ai-text mb-1.5">Nome Completo</label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none text-ai-subtext">
-                                        <User size={14} className="sm:w-4 sm:h-4" />
+                            <>
+                                <div>
+                                    <label className="block text-[10px] sm:text-xs font-medium text-ai-text mb-1.5">Nome Completo</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none text-ai-subtext">
+                                            <User size={14} className="sm:w-4 sm:h-4" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            required={isSignup}
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            className="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 bg-ai-surface border border-ai-border rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-ai-text focus:border-ai-text transition-all outline-none"
+                                            placeholder="Seu nome completo"
+                                        />
                                     </div>
-                                    <input
-                                        type="text"
-                                        required={isSignup}
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        className="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 bg-ai-surface border border-ai-border rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-ai-text focus:border-ai-text transition-all outline-none"
-                                        placeholder="Seu nome completo"
-                                    />
                                 </div>
-                            </div>
+
+                                <div>
+                                    <label className="block text-[10px] sm:text-xs font-medium text-ai-text mb-1.5">
+                                        Nível de Acesso
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none text-ai-subtext">
+                                            <Shield size={14} className="sm:w-4 sm:h-4" />
+                                        </div>
+                                        <select
+                                            value={userRole}
+                                            onChange={(e) => setUserRole(e.target.value as 'admin' | 'analyst' | 'client')}
+                                            className="block w-full pl-9 sm:pl-10 pr-8 py-2 sm:py-2.5 bg-ai-surface border border-ai-border rounded-lg text-xs sm:text-sm focus:ring-1 focus:ring-ai-text focus:border-ai-text transition-all outline-none appearance-none cursor-pointer"
+                                        >
+                                            <option value="client">Cliente</option>
+                                            <option value="analyst">Analista</option>
+                                            <option value="admin">Administrador</option>
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 pr-2.5 sm:pr-3 flex items-center pointer-events-none text-ai-subtext">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-ai-subtext mt-1">
+                                        {userRole === 'admin' && 'Acesso total ao sistema'}
+                                        {userRole === 'analyst' && 'Gerencia clientes e cria convites'}
+                                        {userRole === 'client' && 'Acesso básico ao sistema'}
+                                    </p>
+                                </div>
+                            </>
                         )}
 
                         <div>

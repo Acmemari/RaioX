@@ -273,7 +273,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return checkLimitUtil(user, limit, currentValue);
   };
 
-  const signup = async (email: string, password: string, name: string, phone: string, organizationName?: string): Promise<{ success: boolean; error?: string }> => {
+  const signup = async (email: string, password: string, name: string, phone: string, organizationName?: string, role: 'admin' | 'analyst' | 'client' = 'client'): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
       // Sign up with Supabase Auth
@@ -285,7 +285,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             name: name,
             full_name: name,
             organization_name: organizationName || `${name}'s Organization`,
-            role: 'client',
+            role: role,
             plan: 'basic',
             avatar: name.charAt(0).toUpperCase(),
             phone: phone
@@ -311,11 +311,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Aguardar um pouco para garantir que o perfil foi criado
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Atualizar o perfil com phone e organization_name se fornecidos
+        // Atualizar o perfil com phone, role e organization_name se fornecidos
         try {
           const updateData: any = {};
           if (phone) {
             updateData.phone = phone;
+          }
+          // Atualizar role do usuário
+          if (role) {
+            updateData.role = role;
           }
           
           // Buscar a organização do usuário e atualizar se necessário
